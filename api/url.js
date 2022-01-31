@@ -1,6 +1,8 @@
 'use strict'
 const { DynamoDB } = require('aws-sdk');
 const AWS = require('aws-sdk');
+const { Console } = require('console');
+const { object } = require('joi');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 
@@ -28,19 +30,19 @@ module.exports.url = (event, context, callback) => {
     dynamoDb.update(params2, function(err,data){
         if(err) {
             callback(null, {
-                statusCode: error.statusCode || 501,
+                statusCode: err.statusCode || 501,
                 headers: {'Content-type': 'text/plain'},
-                body: 'Couldn\'t fetch the item',
+                body: 'Invalid Value2!!',
             });
         }
     })
 
   dynamoDb.get(params, (error,result) =>{
-      if(error) {
+      if(Object.keys(result).length === 0) {
           callback(null, {
-              statusCode: error.statusCode || 501,
+              statusCode: 400,
               headers: {'Content-Type': 'text/plain'},
-              body: 'Couldn\'t fetch the item',
+              body: 'Invalid Value!!',
           });
           return;
         }

@@ -12,12 +12,11 @@ module.exports.stats = (event, context, callback) => {
         },
     };
     dynamoDb.get(params, (error, result) => {
-        if (error) {
-            console.error(error);
+        if (Object.keys(result).length === 0) {
             callback(null, {
-                statusCode: error.statusCode || 501,
+                statusCode: 400,
                 headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t fetch the list',
+                body: 'Invalid value',
             });
             return;
         }
