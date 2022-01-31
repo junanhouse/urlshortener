@@ -65,7 +65,7 @@ Status code: 200
 ```
 
 ### url
-+ Request : if you access invalid url, return 500 status code
++ Request : if you access invalid url, return 400 status code
 
 ```
 GET
@@ -79,7 +79,7 @@ redirect registered url
 
 ### stats
 
-+ Request : if you access invalid url, return 500 status code
++ Request : if you access invalid url, return 400 status code
 
 ```
 GET
