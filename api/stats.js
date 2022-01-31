@@ -23,7 +23,7 @@ module.exports.stats = (event, context, callback) => {
         }
         const response = {
             statusCode: 200,
-            body: JSON.stringify({ "stat" : result.Item.stats })
+            body: JSON.stringify({ "visit" : result.Item.stats })
         };
         callback(null, response);
     })

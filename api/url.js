@@ -26,8 +26,13 @@ module.exports.url = (event, context, callback) => {
         ReturnValues: "UPDATED_NEW"
     }
     dynamoDb.update(params2, function(err,data){
-        if(err) console.log(params2)
-        else console.log(data);
+        if(err) {
+            callback(null, {
+                statusCode: error.statusCode || 501,
+                headers: {'Content-type': 'text/plain'},
+                body: 'Couldn\'t fetch the item',
+            });
+        }
     })
 
   dynamoDb.get(params, (error,result) =>{
