@@ -1,29 +1,25 @@
 'use strict'
+const response = require('./response')
 const AWS = require('aws-sdk');
+const { result } = require('lodash');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 
 
-module.exports.stats = (event, context, callback) => {
+module.exports.stats = async (event, context, callback) => {
     const params = {
         TableName: 'myurltable',
         Key: {
             id: event.pathParameters.id,
         },
     };
-    dynamoDb.get(params, (error, result) => {
-        if (Object.keys(result).length === 0) {
-            callback(null, {
-                statusCode: 400,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Invalid value',
-            });
-            return;
-        }
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify({ "visit" : result.Item.stats })
-        };
-        callback(null, response);
-    })
+    try{
+        const result = await dynamoDb.get(params).promise()
+        if(Object.keys(result).length === 0) return response._400('Invalid Value');
+        const data = {"visit": result.Item.stats}
+        return response._200(data);
+    }
+    catch(error){
+        return response._500(error);
+    }
 }

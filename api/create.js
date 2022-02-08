@@ -1,20 +1,13 @@
 'use strict'
+const response = require('./response');
 const AWS = require('aws-sdk');
 const { randomUUID } = require('crypto');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const uuid = require('uuid');
 
-module.exports.create = (event, context, callback) => {
+module.exports.create = async (event, context, callback) => {
+    if (!event.body) return response._400('Missing event.body');
     const data = JSON.parse(event.body);
-    if (typeof data.url !== 'string'){
-        console.error('Failed');
-        callback(null, {
-            statusCode: 400,
-            headers: { 'Content-Type': 'text/plain'},
-            body: 'Couldn\'t create the url item',
-        });
-        return;
-    }
     if(data.url.match(/https?:\/\//g) !== true){
         data.url = 'https://' + data.url
     }
@@ -26,20 +19,12 @@ module.exports.create = (event, context, callback) => {
         stats: 0
         }
     }
-    dynamoDb.put(params, (error) => {
-        if (error) {
-            console.error(error);
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain'},
-                body: data,
-            });
-            return;
-        }
-        const response = {
-            statusCode : 200,
-            body: JSON.stringify(params.Item),
-        }
-        callback(null,response);
-    });
+    try {
+        await dynamoDb.put(params).promise()
+        return response._200(params.Item)
+    } catch(error){
+        console.log(error)
+        return response._500(error)
+    }
 }
+
